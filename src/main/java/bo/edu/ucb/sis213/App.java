@@ -11,6 +11,7 @@ public class App {
     private static int usuarioId;
     private static double saldo;
     private static int pinActual;
+    private static Connection conectionAct = null;
 
     private static final String HOST = "127.0.0.1";
     private static final int PORT = 3306;
@@ -37,9 +38,10 @@ public class App {
 
         System.out.println("Bienvenido al Cajero Automático.");
 
-        Connection connection = null;
+        //Connection connection = null;
         try {
-            connection = getConnection(); // Reemplaza esto con tu conexión real
+            //connection = getConnection(); // Reemplaza esto con tu conexión real
+            conectionAct = getConnection();
         } catch (SQLException ex) {
             System.err.println("No se puede conectar a Base de Datos");
             ex.printStackTrace();
@@ -50,7 +52,7 @@ public class App {
         while (intentos > 0) {
             System.out.print("Ingrese su PIN de 4 dígitos: ");
             int pinIngresado = scanner.nextInt();
-            if (validarPIN(connection, pinIngresado)) {
+            if (validarPIN(conectionAct, pinIngresado)) {
                 pinActual = pinIngresado;
                 mostrarMenu();
                 break;
@@ -98,16 +100,16 @@ public class App {
 
             switch (opcion) {
                 case 1:
-                    consultarSaldo();
+                    consultarSaldo(conectionAct);
                     break;
                 case 2:
-                    realizarDeposito();
+                    realizarDeposito(conectionAct);
                     break;
                 case 3:
-                    realizarRetiro();
+                    realizarRetiro(conectionAct);
                     break;
                 case 4:
-                    cambiarPIN();
+                    cambiarPIN(conectionAct);
                     break;
                 case 5:
                     System.out.println("Gracias por usar el cajero. ¡Hasta luego!");
@@ -119,39 +121,92 @@ public class App {
         }
     }
 
-    public static void consultarSaldo() {
-        System.out.println("Su saldo actual es: $" + saldo);
+    public static void consultarSaldo(Connection connection) {
+        String query = "SELECT saldo FROM usuarios WHERE id = ?";
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setInt(1, usuarioId);
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            if (resultSet.next()) {
+                double saldoObtenido = resultSet.getDouble("saldo");
+                System.out.println("Su saldo actual es uwu: $" + saldoObtenido);
+            } else {
+                System.out.println("No se encontró ningún registro con el ID proporcionado.");
+            }
+
+            resultSet.close();
+            preparedStatement.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            System.out.println("Ocurrió un error al consultar el saldo.");
+        }
     }
 
-    public static void realizarDeposito() {
+
+    public static void realizarDeposito(Connection connection) {
         Scanner scanner = new Scanner(System.in);
         System.out.print("Ingrese la cantidad a depositar: $");
-        double cantidad = scanner.nextDouble();
 
-        if (cantidad <= 0) {
-            System.out.println("Cantidad no válida.");
-        } else {
-            saldo += cantidad;
-            System.out.println("Depósito realizado con éxito. Su nuevo saldo es: $" + saldo);
+        try {
+            double cantidad = scanner.nextDouble();
+
+            if (cantidad <= 0) {
+                System.out.println("Cantidad no válida.");
+            } else {
+                String updateQuery = "UPDATE usuarios SET saldo = saldo + ? WHERE id = ?";
+                PreparedStatement updateStatement = connection.prepareStatement(updateQuery);
+                updateStatement.setDouble(1, cantidad);
+                updateStatement.setInt(2, usuarioId);
+
+                int rowsAffected = updateStatement.executeUpdate();
+
+                if (rowsAffected > 0) {
+                    saldo += cantidad;
+                    System.out.println("Depósito realizado con éxito. Su nuevo saldo es: $" + saldo);
+                } else {
+                    System.out.println("No se realizó el depósito. Verifique su ID de usuario.");
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            System.out.println("Ocurrió un error al realizar el depósito.");
         }
     }
 
-    public static void realizarRetiro() {
+
+
+    public static void realizarRetiro(Connection connection) {
         Scanner scanner = new Scanner(System.in);
         System.out.print("Ingrese la cantidad a retirar: $");
-        double cantidad = scanner.nextDouble();
 
-        if (cantidad <= 0) {
-            System.out.println("Cantidad no válida.");
-        } else if (cantidad > saldo) {
-            System.out.println("Saldo insuficiente.");
-        } else {
-            saldo -= cantidad;
-            System.out.println("Retiro realizado con éxito. Su nuevo saldo es: $" + saldo);
+        try {
+            double cantidad = scanner.nextDouble();
+
+            if (cantidad <= 0) {
+                System.out.println("Cantidad no válida.");
+            } else {
+                String updateQuery = "UPDATE usuarios SET saldo = saldo - ? WHERE id = ?";
+                PreparedStatement updateStatement = connection.prepareStatement(updateQuery);
+                updateStatement.setDouble(1, cantidad);
+                updateStatement.setInt(2, usuarioId);
+
+                int rowsAffected = updateStatement.executeUpdate();
+
+                if (rowsAffected > 0) {
+                    saldo -= cantidad;
+                    System.out.println("Retiro realizado con éxito. Su nuevo saldo es: $" + saldo);
+                } else {
+                    System.out.println("No se realizó el retiro. Verifique su ID de usuario.");
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            System.out.println("Ocurrió un error al realizar el retiro.");
         }
     }
 
-    public static void cambiarPIN() {
+    public static void cambiarPIN(Connection connection) {
         Scanner scanner = new Scanner(System.in);
         System.out.print("Ingrese su PIN actual: ");
         int pinIngresado = scanner.nextInt();
@@ -163,7 +218,22 @@ public class App {
             int confirmacionPin = scanner.nextInt();
 
             if (nuevoPin == confirmacionPin) {
-                pinActual = nuevoPin;
+                try {
+                    String updateQuery = "UPDATE usuarios SET pin = ? WHERE id = ?";
+                    PreparedStatement updateStatement = connection.prepareStatement(updateQuery);
+                    updateStatement.setInt(1, nuevoPin);
+                    updateStatement.setInt(2, usuarioId);
+                    int rowsAffected = updateStatement.executeUpdate();
+                    
+                    if (rowsAffected > 0) {
+                        System.out.println("El cambio de Pin fue exitoso");
+                    } else {
+                        System.out.println("Ocurrio un error, vuelve a intentarlo");
+                    }
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                    System.out.println("Ocurrió un error al realizar el cambio de Pin.");
+                }
                 System.out.println("PIN actualizado con éxito.");
             } else {
                 System.out.println("Los PINs no coinciden.");
