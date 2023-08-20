@@ -34,7 +34,6 @@ public class App {
 
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
-        int intentos = 3;
 
         System.out.println("Bienvenido al Cajero Automático.");
 
@@ -48,7 +47,13 @@ public class App {
             System.exit(1);
         }
         
+        ingresoPIN();
+        
+    }
 
+    public static void ingresoPIN(){
+        Scanner scanner = new Scanner(System.in);
+        int intentos = 3;
         while (intentos > 0) {
             System.out.print("Ingrese su PIN de 4 dígitos: ");
             int pinIngresado = scanner.nextInt();
@@ -91,6 +96,7 @@ public class App {
         while (true) {
             System.out.println("\nMenú Principal:");
             System.out.println("1. Consultar saldo.");
+      
             System.out.println("2. Realizar un depósito.");
             System.out.println("3. Realizar un retiro.");
             System.out.println("4. Cambiar PIN.");
@@ -162,6 +168,7 @@ public class App {
                 int rowsAffected = updateStatement.executeUpdate();
 
                 if (rowsAffected > 0) {
+                    historicoRegister(cantidad, "deposito");
                     saldo += cantidad;
                     System.out.println("Depósito realizado con éxito. Su nuevo saldo es: $" + saldo);
                 } else {
@@ -171,6 +178,29 @@ public class App {
         } catch (SQLException e) {
             e.printStackTrace();
             System.out.println("Ocurrió un error al realizar el depósito.");
+        }
+    }
+
+    public static void historicoRegister(double cantidad, String tipo_operacion){
+        //insert query
+        String insertQuery = "INSERT INTO historico (usuario_id, tipo_operacion, cantidad, fecha) VALUES (?, ?, ?, ?)";
+        try {
+            PreparedStatement insertStatement = conectionAct.prepareStatement(insertQuery);
+            insertStatement.setInt(1, usuarioId);
+            insertStatement.setString(2, tipo_operacion);
+            insertStatement.setDouble(3, cantidad);
+            java.sql.Timestamp timestamp = new java.sql.Timestamp(System.currentTimeMillis());
+            insertStatement.setTimestamp(4, timestamp);
+
+            int rowsAffected = insertStatement.executeUpdate();
+            if (rowsAffected > 0) {
+                System.out.println("Se registro el "+tipo_operacion + " con exito.");
+            } else {
+                System.out.println("No se registro el "+tipo_operacion+".");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            System.out.println("Ocurrió un error al registrar el "+tipo_operacion+".");
         }
     }
 
@@ -194,6 +224,7 @@ public class App {
                 int rowsAffected = updateStatement.executeUpdate();
 
                 if (rowsAffected > 0) {
+                    historicoRegister(cantidad, "retiro");
                     saldo -= cantidad;
                     System.out.println("Retiro realizado con éxito. Su nuevo saldo es: $" + saldo);
                 } else {
