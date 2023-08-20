@@ -34,7 +34,7 @@ public class Menu extends JFrame {
 
     private void createTopBar(JPanel mainPanel) {
         JPanel topBar = new JPanel(new BorderLayout());
-        topBar.setBackground(new Color(135, 206, 235)); // Fondo celeste
+        topBar.setBackground(new Color(30, 144, 255)); // Fondo celeste
 
         JLabel welcomeLabel = new JLabel("¡Bienvenido!");
         welcomeLabel.setFont(new Font("Arial", Font.BOLD, 24));

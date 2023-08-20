@@ -119,6 +119,7 @@ public class Welcome extends JFrame {
                 if(result){
                     //new Saldo(user);
                     new Menu(user);
+                    dispose();
                 }
             }
         });
