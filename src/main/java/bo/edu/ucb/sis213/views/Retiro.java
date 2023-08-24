@@ -1,26 +1,27 @@
-package bo.edu.ucb.sis213.frames;
+package bo.edu.ucb.sis213.views;
+
 import javax.swing.*;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.PlainDocument;
 
-import bo.edu.ucb.sis213.User;
+import bo.edu.ucb.sis213.bl.User;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public class Deposito extends JFrame {
+public class Retiro extends JFrame {
 
     private JTextField amountField;
     private User user;
-    public Deposito(User user) {
+    public Retiro(User user) {
         this.user = user;
         initializeUI();
     }
 
     private void initializeUI() {
-        setTitle("Depósito");
+        setTitle("Retiro");
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setPreferredSize(new Dimension(600, 300));
         setResizable(false);
@@ -59,7 +60,7 @@ public class Deposito extends JFrame {
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 20));
         buttonPanel.setOpaque(false);
 
-        JButton depositButton = new JButton("Depositar");
+        JButton depositButton = new JButton("Retirar");
         depositButton.setFont(new Font("Arial", Font.BOLD, 30));
         depositButton.setForeground(Color.WHITE);
         depositButton.setBackground(new Color(30, 144, 255));
@@ -69,11 +70,11 @@ public class Deposito extends JFrame {
                 String amount = amountField.getText();
                 if (!amount.isEmpty()) {
                     double amountDouble = Double.parseDouble(amount);
-                    user.realizarDeposito(amountDouble);
+                    user.realizarRetiro(amountDouble);
                     //JOptionPane.showMessageDialog(DepositFrame.this, "Depósito realizado con éxito. Su nuevo saldo es: $" + user.consultarSaldo());
                     dispose();
                 } else {
-                    JOptionPane.showMessageDialog(Deposito.this, "Ingrese un monto válido.");
+                    JOptionPane.showMessageDialog(Retiro.this, "Ingrese un monto válido.");
                 }
             }
         });

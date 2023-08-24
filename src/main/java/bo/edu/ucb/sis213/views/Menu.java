@@ -1,7 +1,7 @@
-package bo.edu.ucb.sis213.frames;
+package bo.edu.ucb.sis213.views;
 import javax.swing.*;
 
-import bo.edu.ucb.sis213.User;
+import bo.edu.ucb.sis213.bl.User;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;

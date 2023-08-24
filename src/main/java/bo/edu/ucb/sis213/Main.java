@@ -2,7 +2,7 @@ package bo.edu.ucb.sis213;
 
 import javax.swing.*;
 
-import bo.edu.ucb.sis213.frames.Welcome;
+import bo.edu.ucb.sis213.views.Welcome;
 
 public class Main {
 
