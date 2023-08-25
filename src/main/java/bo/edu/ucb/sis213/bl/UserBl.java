@@ -1,17 +1,9 @@
 package bo.edu.ucb.sis213.bl;
-
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Vector;
-
 import javax.security.auth.login.LoginException;
-import javax.swing.JOptionPane;
-
 import bo.edu.ucb.sis213.dao.HistoricoDao;
 import bo.edu.ucb.sis213.dao.UsuariosDao;
-import bo.edu.ucb.sis213.views.Menu;
 
 public class UserBl {
 
