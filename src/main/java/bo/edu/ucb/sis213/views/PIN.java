@@ -1,8 +1,9 @@
-package bo.edu.ucb.sis213.frames;
+package bo.edu.ucb.sis213.views;
 import javax.swing.*;
 
-import bo.edu.ucb.sis213.PasswordHandler;
-import bo.edu.ucb.sis213.User;
+import bo.edu.ucb.sis213.bl.PasswordHandler;
+import bo.edu.ucb.sis213.bl.UserBl;
+import bo.edu.ucb.sis213.dto.UsuarioDto;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -12,8 +13,8 @@ public class PIN extends JFrame {
     JPasswordField currentPINField;
     JPasswordField newPINField;
     JPasswordField confirmPINField;
-    User user;
-    public PIN(User user) {
+    UsuarioDto user;
+    public PIN(UsuarioDto user) {
         this.user = user;
         initializeUI();
     }
@@ -116,11 +117,17 @@ public class PIN extends JFrame {
         acceptButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                int currentPIN = PasswordHandler.passwordToInt(currentPINField);
-                int newPIN = PasswordHandler.passwordToInt(newPINField);
-                int confirmPIN = PasswordHandler.passwordToInt(confirmPINField);
-                user.cambiarPIN(currentPIN, newPIN, confirmPIN);
-                dispose();
+                try {
+                    int currentPIN = PasswordHandler.passwordToInt(currentPINField);
+                    int newPIN = PasswordHandler.passwordToInt(newPINField);
+                    int confirmPIN = PasswordHandler.passwordToInt(confirmPINField);
+                    UserBl userBl = new UserBl();
+                    userBl.cambiarPIN(user.getPinActual(), currentPIN, newPIN, confirmPIN, user.getAlias());
+                    JOptionPane.showMessageDialog(null, "PIN cambiado con éxito");
+                    dispose();
+                } catch (RuntimeException exc) {
+                    JOptionPane.showMessageDialog(null, exc.getMessage());
+                }
             }
         });
         buttonPanel.add(acceptButton);

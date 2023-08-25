@@ -1,18 +1,20 @@
-package bo.edu.ucb.sis213.frames;
+package bo.edu.ucb.sis213.views;
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
-import bo.edu.ucb.sis213.User;
+import bo.edu.ucb.sis213.bl.UserBl;
+import bo.edu.ucb.sis213.dto.UsuarioDto;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.SQLException;
 import java.util.Vector;
 
 public class ExtractoBancario extends JFrame {
-    User user;
-    public ExtractoBancario(User user) {
+    UsuarioDto user;
+    public ExtractoBancario(UsuarioDto user) {
         this.user = user;
         initializeUI();
     }
@@ -77,7 +79,14 @@ public class ExtractoBancario extends JFrame {
         }
 
         Vector<Vector<Object>> data = new Vector<>();
-        user.extractoBancario(data);
+        UserBl userBl = new UserBl();
+        try {
+            userBl.consultarHistorico(data, user.getAlias());
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null, "Error al consultar el historial", "Error", JOptionPane.ERROR_MESSAGE);
+            dispose();
+            e.printStackTrace();
+        }
         for (Vector<Object> row : data) {
             tableModel.addRow(row);
         }

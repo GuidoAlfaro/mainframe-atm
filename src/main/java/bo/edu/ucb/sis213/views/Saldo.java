@@ -1,7 +1,8 @@
-package bo.edu.ucb.sis213.frames;
+package bo.edu.ucb.sis213.views;
 import javax.swing.*;
 
-import bo.edu.ucb.sis213.User;
+import bo.edu.ucb.sis213.bl.UserBl;
+import bo.edu.ucb.sis213.dto.UsuarioDto;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -9,9 +10,16 @@ import java.awt.event.ActionListener;
 
 public class Saldo extends JFrame {
 
-    User user;
-    public Saldo(User user) {
+    UsuarioDto user;
+    public Saldo(UsuarioDto user) {
         this.user = user;
+        try {
+            user.setSaldo(UserBl.consultarSaldo(user.getAlias()));
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Error al consultar el saldo", "Error", JOptionPane.ERROR_MESSAGE);
+            dispose();
+            e.printStackTrace();
+        }
         initializeUI();
     }
 
