@@ -14,8 +14,7 @@ public class PasswordHandler {
             valorNumerico = Integer.parseInt(password);
             return valorNumerico;
         } catch (NumberFormatException ex) {
-            System.out.println("La contraseña no es un número válido.");
+            throw new NumberFormatException("La contraseña no es un número válido.");
         }
-        return -1;
     }
 }

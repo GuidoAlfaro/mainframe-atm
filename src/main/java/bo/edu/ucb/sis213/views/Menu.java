@@ -1,15 +1,15 @@
 package bo.edu.ucb.sis213.views;
 import javax.swing.*;
 
-import bo.edu.ucb.sis213.bl.User;
+import bo.edu.ucb.sis213.dto.UsuarioDto;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class Menu extends JFrame {
-    User user;
-    public Menu(User user) {
+    UsuarioDto user;
+    public Menu(UsuarioDto user) {
         this.user = user;
         initializeUI();
     }

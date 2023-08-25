@@ -1,10 +1,12 @@
 package bo.edu.ucb.sis213.views;
 
+import javax.security.auth.login.LoginException;
 import javax.swing.*;
 import javax.swing.text.PlainDocument;
 
 import bo.edu.ucb.sis213.bl.PasswordHandler;
-import bo.edu.ucb.sis213.bl.User;
+import bo.edu.ucb.sis213.bl.UserBl;
+import bo.edu.ucb.sis213.dto.UsuarioDto;
 
 import java.awt.*;
 import java.awt.event.KeyAdapter;
@@ -112,14 +114,18 @@ public class Welcome extends JFrame {
             String pin = String.valueOf(pinField.getPassword());
             if (alias.isEmpty() || pin.isEmpty()) {
                 JOptionPane.showMessageDialog(null, "Ingrese un alias y un PIN.");
-            } else {
+            }else{
                 int PIN = PasswordHandler.passwordToInt(pinField);
-                User user = new User(PIN, aliasField.getText());
-                boolean result = user.login();
-                if(result){
-                    //new Saldo(user);
-                    new Menu(user);
+                UsuarioDto user = new UsuarioDto(PIN, alias);
+                UserBl userBl = new UserBl();
+                try {
+                    userBl.validarPINBl(PIN, alias);
+                    // Autenticación exitosa, continuar con el flujo.
+                    user.setPinActual(PIN);
+                    new Menu(user);  // Suponiendo que Menu espera un objeto UserBl como argumento.
                     dispose();
+                }catch (LoginException exc) {
+                    JOptionPane.showMessageDialog(null, exc.getMessage());
                 }
             }
         });

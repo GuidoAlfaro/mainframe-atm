@@ -5,17 +5,19 @@ import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.PlainDocument;
 
-import bo.edu.ucb.sis213.bl.User;
+import bo.edu.ucb.sis213.bl.UserBl;
+import bo.edu.ucb.sis213.dto.UsuarioDto;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.SQLException;
 
 public class Retiro extends JFrame {
 
     private JTextField amountField;
-    private User user;
-    public Retiro(User user) {
+    private UsuarioDto user;
+    public Retiro(UsuarioDto user) {
         this.user = user;
         initializeUI();
     }
@@ -68,13 +70,18 @@ public class Retiro extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 String amount = amountField.getText();
-                if (!amount.isEmpty()) {
-                    double amountDouble = Double.parseDouble(amount);
-                    user.realizarRetiro(amountDouble);
-                    //JOptionPane.showMessageDialog(DepositFrame.this, "Depósito realizado con éxito. Su nuevo saldo es: $" + user.consultarSaldo());
+                try {
+                    UserBl userBl = new UserBl();
+                    userBl.realizarRetiro(Double.parseDouble(amount), user.getAlias());
+                    userBl.historicoRegister(Double.parseDouble(amount), "Retiro", user.getAlias());
+                    JOptionPane.showMessageDialog(null, "Retiro realizado con éxito");
                     dispose();
-                } else {
-                    JOptionPane.showMessageDialog(Retiro.this, "Ingrese un monto válido.");
+                } catch (RuntimeException exc) {
+                    JOptionPane.showMessageDialog(null, "Ingrese un monto válido.");
+                } catch(SQLException exc) {
+                    JOptionPane.showMessageDialog(null, "Error al realizar el retiro");
+                } catch(Exception exc) {
+                    JOptionPane.showMessageDialog(null, "Error al realizar el retiro");
                 }
             }
         });

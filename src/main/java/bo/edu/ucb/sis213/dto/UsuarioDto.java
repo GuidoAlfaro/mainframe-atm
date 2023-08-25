@@ -5,21 +5,21 @@ import java.sql.SQLException;
 
 import bo.edu.ucb.sis213.bl.ConnectionDB;
 
-public class Usuario {
+public class UsuarioDto {
     protected int usuarioId;
     protected String alias;
     protected double saldo;
     protected int pinActual;
     protected Connection connection;
     
-    public Usuario(int usuarioId, String alias,double saldo, int pinActual, Connection connection) {
+    public UsuarioDto(int usuarioId, String alias,double saldo, int pinActual, Connection connection) {
         this.usuarioId = usuarioId;
         this.alias = alias;
         this.saldo = saldo;
         this.pinActual = pinActual;
         this.connection = connection;
     }
-    public Usuario(int pinActual, String alias) {
+    public UsuarioDto(int pinActual, String alias) {
         this.usuarioId = 0;
         this.alias = alias;
         this.saldo = 0;
